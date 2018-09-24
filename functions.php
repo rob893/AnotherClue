@@ -1,23 +1,41 @@
 <?php
-function GetNextPuzzle(){
-	$randNum = rand(1, 8);
+
+function CheckIfSeenRiddle($riddleId){
 	
-	if(!isset($_SESSION['puzzlesSeen'])){
-		return $randNum;
+	if(!isset($_SESSION['riddlesSeen'])){
+		return false;
 	}
+	
+	if(in_array($riddleId, $_SESSION['riddlesSeen'])){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+function EnsureUniqueRiddle($riddleId){
+	if(CheckIfSeenRiddle($riddleId)){
+		header("Location: index.php?step=".GetNextRiddle()."");
+	}
+}
+
+function GetNextRiddle(){
+	$numRiddles = 16;
+	$randNum = rand(1, $numRiddles);
 		
 	$i = 0;
-	while(in_array($randNum, $_SESSION['puzzlesSeen'])){
+	while(CheckIfSeenRiddle($randNum)){
 		$i++;
-		if( $i > 8 ){
+		if($i > $numRiddles){
 			$randNum = -1;
 			break;
 		}
 		
-		$randNum = ($randNum + 1) % 8;
+		$randNum = ($randNum + 1) % $numRiddles;
 		
 		if($randNum == 0){
-			$randNum = 8;
+			$randNum = $numRiddles;
 		}
 	}
 	
@@ -25,22 +43,18 @@ function GetNextPuzzle(){
 }
 
 function GetRandomImage($answerImages){
-	$images = array(
-			"cat1.jpg", "egg.jpg", "earth.jpg", "et.jpg", "1.PNG", "2.gif", "3.jpg", "baby.jpg", "gandalf.jpg",
-			"hulk.jpg", "ml.jpg", "pickle.jpg", "ribcage.jpg", "shark.jpg", "sheep.jpg", "kju.jpg", "eagle.jpg",
-			"potato.jpg", "hippo.jpg", "pig.jpg", "banana.jpg", "chip.jpg", "duck.jpg", "yoda.jpg", "washington.jpg",
-			"shrek.jpg", "shirt.jpg"
-		);
+		
+	$images = array_values(array_diff(scandir("images/"), array('..', '.', '1.PNG', '2.gif', '3.jpg')));
 	
-	$urlEnd = $images[array_rand($images)];
+	$image = $images[array_rand($images)];
 	
 	$i = 0;
-	while(in_array($urlEnd, $answerImages) && $i < count($images)){
-		$urlEnd = $images[$i];
+	while(in_array($image, $answerImages) && $i < count($images)){
+		$image = $images[$i];
 		$i++;
 	}
 	
-	return $urlEnd;
+	return $image;
 }
 
 function EchoImages($answerImageFileName){
@@ -77,7 +91,6 @@ function EchoImages($answerImageFileName){
 		echo "
 			<div class='col-sm align-self-center'>
 				<form action='checkAnswer.php' method='post' enctype='multipart/form-data'> 
-						<input type='hidden' name='riddleId' id='riddleId' value='".$_GET['step']."' />
 						<input type='hidden' name='response' id='response' value='".$images[$i]."' />
 						<input type='image' src='images/".$images[$i]."' class='img-fluid mx-auto d-block' alt='Submit Form'  />
 				</form>
@@ -86,75 +99,7 @@ function EchoImages($answerImageFileName){
 	}
 }
 
-function CheckAnswer($riddleId, $answer){
-	
-	switch($riddleId){
-		case 1:
-			if($answer == "potato.jpg"){
-				return true;
-			}
-			else{
-				return false;
-			}
-			break;
-		case 2:
-			if($answer == "cat1.jpg"){
-				return true;
-			}
-			else{
-				return false;
-			}
-			break;
-		case 3:
-			if($answer == "banana.jpg"){
-				return true;
-			}
-			else{
-				return false;
-			}
-			break;
-		case 4:
-			if($answer == "egg.jpg"){
-				return true;
-			}
-			else{
-				return false;
-			}
-			break;
-		case 5:
-			if($answer == "duck.jpg"){
-				return true;
-			}
-			else{
-				return false;
-			}
-			break;
-		case 6:
-			if($answer == "pickle.jpg"){
-				return true;
-			}
-			else{
-				return false;
-			}
-			break;
-		case 7:
-			if($answer == "ribcage.jpg"){
-				return true;
-			}
-			else{
-				return false;
-			}
-			break;
-		case 8:
-			if($answer == "shirt.jpg"){
-				return true;
-			}
-			else{
-				return false;
-			}
-			break;
-		default:
-			return false;
-	}
+function CheckAnswer($riddleAnswer, $playerAnswer){
+	return $riddleAnswer == $playerAnswer;
 }
 ?>

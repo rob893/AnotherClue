@@ -1,12 +1,14 @@
 <?php
 require_once('header.php');
 
-if(isset($_POST['riddleId']) && isset($_POST['response'])){
+if(isset($_POST['response']) && isset($_SESSION['answer'])){
 	
-	if(!CheckAnswer($_POST['riddleId'], $_POST['response'])){
+	if(!CheckAnswer($_SESSION['answer'], $_POST['response'])){
 		header("Location: index.php?step=-1");
 		return;
 	}
+	
+	unset($_SESSION['answer']);
 	
 	if(!isset($_SESSION['points'])){
 		$_SESSION['points'] = 1;
@@ -15,7 +17,7 @@ if(isset($_POST['riddleId']) && isset($_POST['response'])){
 		$_SESSION['points']++;
 	}
 	
-	$randNum = GetNextPuzzle();
+	$randNum = GetNextRiddle();
 	
 	if($_SESSION['points'] >= 5){
 		$randNum = -2;
@@ -30,7 +32,7 @@ if(isset($_POST['riddleId']) && isset($_POST['response'])){
 	return;
 }
 else{
-	echo "Something went wrong!";
+	echo "Something went wrong while checking answer!";
 }
 
 require_once('footer.php');
