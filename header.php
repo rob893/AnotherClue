@@ -1,7 +1,9 @@
 <?php
 ini_set('display_errors', true);
-
+require_once('functions.php');
 date_default_timezone_set('EST');
+
+session_start();
 ?>
 
 <!DOCTYPE html>
