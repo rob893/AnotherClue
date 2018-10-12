@@ -309,7 +309,7 @@ else if(isset($_GET['step']) && $_GET['step'] == 15){
 			Deep in the night,<br>
 			Something comes for you,<br>
 			You try to scream,<br>
-			But no one will come for you.
+			But no one will save you.
 		</p>
 	";
 	
